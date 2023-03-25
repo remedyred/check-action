@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: |
+          rm -rf dist || true
+          pnpm run --loglevel warn build:ci
+          rm -rf **/node_modules || true
+
+      - name: Check if dirty
+        id: check
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "dirty=true" >> $GITHUB_OUTPUT
+          fi
+
+      - if: steps.check.outputs.dirty == 'true'
+        name: Commit and push
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add dist -f
+          git commit -m "chore(release): update build [skip ci]"
+          git push
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm semantic-release

@@ -1,0 +1,35 @@
+{
+	"name": "check-action",
+	"version": "1.0.5",
+	"private": true,
+	"description": "",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "ncc build src/index.ts --minify --target es2021",
+		"build:ci": "pnpm run build --no-cache",
+		"dev": "tsc --watch",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
+	},
+	"release": {
+		"extends": [
+			"@snickbit/semantic-release"
+		]
+	},
+	"dependencies": {
+		"@snickbit/utilities": "3.5.0",
+		"zx": "7.2.1"
+	},
+	"devDependencies": {
+		"@snickbit/eslint-config": "1.4.4",
+		"@snickbit/semantic-release": "1.6.3",
+		"@types/node": "^18.15.9",
+		"@vercel/ncc": "^0.36.1",
+		"eslint": "8.36.0",
+		"semantic-release": "19.0.5"
+	},
+	"engines": {
+		"node": ">= 16"
+	}
+}

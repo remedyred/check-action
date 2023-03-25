@@ -1,0 +1,20 @@
+### Generic template
+# hidden folders & junk files
+.*/
+.*
+*.iml
+
+# Log files
+logs/
+*.log
+
+# Dependencies
+node_modules/
+
+# Keep
+!.git*
+!.*rc*
+!.*ignore
+
+# Force
+.npmrc

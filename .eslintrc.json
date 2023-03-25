@@ -1,0 +1,35 @@
+{
+	"root": true,
+	"extends": [
+		"@snickbit"
+	],
+	"globals": {
+		"ProcessPromise": "readonly",
+		"ProcessOutput": "readonly",
+		"log": "readonly",
+		"$": "readonly",
+		"argv": "readonly",
+		"cd": "readonly",
+		"chalk": "readonly",
+		"echo": "readonly",
+		"expBackoff": "readonly",
+		"fs": "readonly",
+		"glob": "readonly",
+		"globby": "readonly",
+		"nothrow": "readonly",
+		"os": "readonly",
+		"path": "readonly",
+		"question": "readonly",
+		"quiet": "readonly",
+		"quote": "readonly",
+		"quotePowerShell": "readonly",
+		"retry": "readonly",
+		"sleep": "readonly",
+		"spinner": "readonly",
+		"ssh": "readonly",
+		"stdin": "readonly",
+		"which": "readonly",
+		"within": "readonly",
+		"YAML": "readonly"
+	}
+}

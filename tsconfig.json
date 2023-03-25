@@ -1,0 +1,35 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"target": "ES2021",
+		"lib": [
+			"ES2021",
+			"DOM"
+		],
+		"moduleResolution": "NodeNext",
+		"module": "NodeNext",
+		"strict": true,
+		"outDir": "./dist",
+		"declaration": true,
+		"baseUrl": ".",
+		"declarationMap": true,
+		"downlevelIteration": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"newLine": "lf",
+		"noImplicitAny": false,
+		"noImplicitThis": false,
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
+	},
+	"include": [
+		"./src/**/*"
+	]
+}

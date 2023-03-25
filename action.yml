@@ -1,0 +1,50 @@
+name: "Build, test, and lint"
+description: "pnpm run build, test, and lint scripts"
+inputs:
+  PACKAGE_MANAGER:
+    description: "package manager to use. (default: 'pnpm')"
+    required: false
+  SCRIPTS:
+    description: "package.json scripts to run. (default: 'build,lint,test,docs')"
+    required: false
+  NO_BAIL:
+    description: "Don't bail on script failures [true/false] (default: false)"
+    required: false
+  BAIL_ON_MISSING:
+    description: "Bail on missing script [true/false] (default: false)"
+    required: false
+  AUTOFIX_LOCKFILE:
+    description: "Autofix and commit lockfile when mismatched. [true/false] (default: true)"
+    required: false
+  AUTOFIX_LINT:
+    description: "Autofix and commit lint errors. [false/string script name for fix] (default: 'lint:fix')"
+    required: false
+  BAIL_ON_DIRTY:
+    description: "Fail if there are untracked changes. [true/false/string error message] (default: false)"
+    required: false
+  AUTO_COMMIT:
+    description: "Paths that are allowed to be automatically committed if changed. [true/false] (default: false)"
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+
+    - uses: pnpm/action-setup@v2.2.4
+      with:
+        version: 7
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: ${{ inputs.PACKAGE_MANAGER }}
+
+    - name: Run build checks
+      run: node ${{ github.action_path }}/dist/index.js
+      shell: bash
+      env:
+        FORCE_COLOR: "3"
