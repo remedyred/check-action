@@ -132,7 +132,7 @@ void async function() {
 	const installParams: string[] = []
 
 	if (pm.includes('pnpm')) {
-		installParams.push('install', `--loglevel=${isDebug() ? 'debug' : 'warn'}'`, '--frozen-lockfile')
+		installParams.push('install', `--loglevel=${isDebug() ? 'debug' : 'warn'}`, '--frozen-lockfile')
 	} else if (pm.includes('yarn')) {
 		installParams.push('install', '--frozen-lockfile')
 	} else if (pm.includes('npm')) {
