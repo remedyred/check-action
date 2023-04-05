@@ -24,9 +24,13 @@ const success = (pieces, ...args) => {
 }
 
 const debug = (pieces, ...args) => {
-	if (process.env.DEBUG === 'true') {
+	if (isDebug()) {
 		echo(chalk.yellow(`[DEBUG]`), pieces, ...args)
 	}
+}
+
+const isDebug = () => {
+	return process.env.DEBUG === 'true'
 }
 
 void async function() {
@@ -104,7 +108,7 @@ void async function() {
 				flags.push(`--if-present`)
 			}
 
-			if (input.DEBUG) {
+			if (isDebug()) {
 				flags.push(`--loglevel=debug`)
 			}
 
@@ -128,7 +132,7 @@ void async function() {
 	const installParams: string[] = []
 
 	if (pm.includes('pnpm')) {
-		installParams.push('install', '--loglevel=warn', '--frozen-lockfile')
+		installParams.push('install', `--loglevel=${isDebug() ? 'debug' : 'warn'}'`, '--frozen-lockfile')
 	} else if (pm.includes('yarn')) {
 		installParams.push('install', '--frozen-lockfile')
 	} else if (pm.includes('npm')) {
@@ -156,7 +160,7 @@ void async function() {
 			await $`git commit -m "chore: update lockfile [skip ci]"`
 			await $`git push`
 		} else {
-			die`${error.stderr}`
+			die`Error installing dependencies ${error.stderr}`
 		}
 	}
 	success`Dependencies installed`
