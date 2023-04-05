@@ -42,7 +42,7 @@ void async function() {
 		BAIL_ON_DIRTY: boolean | string
 		AUTO_COMMIT: boolean | string
 		DEBUG?: boolean
-		GH_TOKEN?: string
+		GITHUB_TOKEN?: string
 		NPM_REGISTRY?: string
 		NPM_TOKEN?: string
 	}
@@ -57,7 +57,7 @@ void async function() {
 		BAIL_ON_DIRTY: false,
 		AUTO_COMMIT: true,
 		DEBUG: false,
-		GH_TOKEN: process.env.GITHUB_TOKEN,
+		GITHUB_TOKEN: process.env.GITHUB_TOKEN,
 		NPM_REGISTRY: process.env.NPM_REGISTRY,
 		NPM_TOKEN: process.env.NPM_TOKEN || process.env.NPM_AUTH_TOKEN
 	}
@@ -86,8 +86,8 @@ void async function() {
 		process.env.NPM_REGISTRY = input.NPM_REGISTRY
 	}
 
-	if (input.GH_TOKEN) {
-		process.env.GITHUB_TOKEN = input.GH_TOKEN
+	if (input.GITHUB_TOKEN) {
+		process.env.GITHUB_TOKEN = input.GITHUB_TOKEN
 	}
 
 	const hasScript = scriptName => {
