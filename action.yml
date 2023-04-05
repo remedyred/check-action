@@ -25,6 +25,18 @@ inputs:
   AUTO_COMMIT:
     description: "Paths that are allowed to be automatically committed if changed. [true/false] (default: false)"
     required: false
+  GH_TOKEN:
+    description: "GitHub token to use. (default: ${{ secrets.GITHUB_TOKEN }})"
+    required: false
+    default: ${{ secrets.GITHUB_TOKEN }}
+  NPM_REGISTRY:
+    description: "NPM registry to use. (default: 'https://registry.npmjs.org')"
+    required: false
+    default: "https://registry.npmjs.org"
+  NPM_TOKEN:
+    description: "NPM token to use. (default: ${{ secrets.NPM_TOKEN }})"
+    required: false
+    default: ${{ secrets.NPM_TOKEN }}
 runs:
   using: composite
   steps:
@@ -32,6 +44,7 @@ runs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 2
+        token: ${{ inputs.GH_TOKEN }}
 
     - uses: pnpm/action-setup@v2.2.4
       with:
@@ -42,6 +55,7 @@ runs:
       with:
         node-version: 16
         cache: ${{ inputs.PACKAGE_MANAGER }}
+        registry-url: ${{ inputs.NPM_REGISTRY }}
 
     - name: Run build checks
       run: node ${{ github.action_path }}/dist/index.js

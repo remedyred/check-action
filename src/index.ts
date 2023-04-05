@@ -42,6 +42,9 @@ void async function() {
 		BAIL_ON_DIRTY: boolean | string
 		AUTO_COMMIT: boolean | string
 		DEBUG?: boolean
+		GH_TOKEN?: string
+		NPM_REGISTRY?: string
+		NPM_TOKEN?: string
 	}
 
 	const inputDefaults: Input = {
@@ -53,7 +56,10 @@ void async function() {
 		AUTOFIX_LINT: 'lint:fix',
 		BAIL_ON_DIRTY: false,
 		AUTO_COMMIT: true,
-		DEBUG: false
+		DEBUG: false,
+		GH_TOKEN: process.env.GITHUB_TOKEN,
+		NPM_REGISTRY: process.env.NPM_REGISTRY,
+		NPM_TOKEN: process.env.NPM_TOKEN || process.env.NPM_AUTH_TOKEN
 	}
 
 	const input = {
@@ -70,6 +76,19 @@ void async function() {
 	const pm = [input.PACKAGE_MANAGER]
 	const packageJson = getFileJSON('package.json')
 	const availableScripts = Object.keys(packageJson?.scripts || {})
+
+	if (input.NPM_TOKEN) {
+		process.env.NPM_TOKEN = input.NPM_TOKEN
+		process.env.NODE_AUTH_TOKEN = input.NPM_TOKEN
+	}
+
+	if (input.NPM_REGISTRY) {
+		process.env.NPM_REGISTRY = input.NPM_REGISTRY
+	}
+
+	if (input.GH_TOKEN) {
+		process.env.GITHUB_TOKEN = input.GH_TOKEN
+	}
 
 	const hasScript = scriptName => {
 		return availableScripts.includes(scriptName)
