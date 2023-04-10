@@ -71,7 +71,7 @@ void async function() {
 		...JSONParse<Input>(args[0])
 	}
 	input.DEBUG ||= process.env.RUNNER_DEBUG === 'true'
-	process.env.DEBUG = process.env.RUNNER_DEBUG === 'true' || input.DEBUG === 'true' ? 'true' : 'false'
+	process.env.DEBUG = process.env.RUNNER_DEBUG === 'true' || input.DEBUG ? 'true' : 'false'
 	try {
 		await which(input.PACKAGE_MANAGER)
 	} catch {
@@ -131,6 +131,7 @@ void async function() {
 	echo`Setup git`
 	await $`git config --global user.email "github-actions[bot]@users.noreply.github.com"`
 	await $`git config --global user.name "github-actions[bot]"`
+	await $`git config advice.ignoredHook false`
 
 	echo`Install dependencies`
 	const installParams: string[] = []
