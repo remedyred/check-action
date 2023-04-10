@@ -142,7 +142,7 @@ void async function() {
 	try {
 		await $`${pm} ${installParams}`
 	} catch (error: any) {
-		if (error.stderr.includes('ERR_PNPM_OUTDATED_LOCKFILE') && input.AUTOFIX_LOCKFILE) {
+		if (error.stdout.includes('ERR_PNPM_OUTDATED_LOCKFILE') && input.AUTOFIX_LOCKFILE) {
 			debug`Updating lockfile`
 			const lockfile: string[] = []
 			if (pm.includes('pnpm')) {
@@ -160,8 +160,7 @@ void async function() {
 			await $`git commit -m "chore: update lockfile [skip ci]"`
 			await $`git push`
 		} else {
-			debug`Error installing dependencies: ${error}`
-			die`Error installing dependencies ${error.stderr}`
+			die`Error installing dependencies ${error.stdout}`
 		}
 	}
 	success`Dependencies installed`
