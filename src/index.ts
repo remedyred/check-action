@@ -42,10 +42,10 @@ void async function() {
 		NO_BAIL: boolean
 		BAIL_ON_MISSING: boolean
 		AUTOFIX_LOCKFILE: boolean
-		AUTOFIX_LINT: string | false
+		AUTOFIX_LINT: boolean | string
 		BAIL_ON_DIRTY: boolean | string
 		AUTO_COMMIT: boolean | string
-		DEBUG?: boolean
+		DEBUG?: boolean | string
 		GITHUB_TOKEN?: string
 		NPM_REGISTRY?: string
 		NPM_TOKEN?: string
@@ -71,7 +71,7 @@ void async function() {
 		...JSONParse<Input>(args[0])
 	}
 	input.DEBUG ||= process.env.RUNNER_DEBUG === 'true'
-	process.env.DEBUG = input.DEBUG ? 'true' : 'false'
+	process.env.DEBUG = process.env.RUNNER_DEBUG === 'true' || input.DEBUG === 'true' ? 'true' : 'false'
 	try {
 		await which(input.PACKAGE_MANAGER)
 	} catch {
