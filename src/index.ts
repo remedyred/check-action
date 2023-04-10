@@ -160,6 +160,7 @@ void async function() {
 			await $`git commit -m "chore: update lockfile [skip ci]"`
 			await $`git push`
 		} else {
+			debug`Error installing dependencies: ${error}`
 			die`Error installing dependencies ${error.stderr}`
 		}
 	}
