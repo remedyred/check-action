@@ -144,7 +144,10 @@ void async function() {
 	}
 
 	try {
-		await $`${pm} ${installParams}`
+		const results = await $`${pm} ${installParams}`
+		if (results.exitCode === 0) {
+			success`Dependencies installed`
+		}
 	} catch (error: any) {
 		if (error.stdout.includes('ERR_PNPM_OUTDATED_LOCKFILE') && input.AUTOFIX_LOCKFILE) {
 			debug`Updating lockfile`
