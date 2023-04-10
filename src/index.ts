@@ -128,6 +128,10 @@ void async function() {
 		}
 	}
 
+	echo`Setup git`
+	await $`git config --global user.email "github-actions[bot]@users.noreply.github.com"`
+	await $`git config --global user.name "github-actions[bot]"`
+
 	echo`Install dependencies`
 	const installParams: string[] = []
 
