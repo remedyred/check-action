@@ -54,6 +54,8 @@ runs:
     - uses: pnpm/action-setup@v2.2.4
       with:
         version: 7
+      env:
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
@@ -61,6 +63,8 @@ runs:
         node-version: 16
         cache: ${{ inputs.PACKAGE_MANAGER }}
         registry-url: ${{ inputs.NPM_REGISTRY }}
+      env:
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     - name: Run build checks
       run: node ${{ github.action_path }}/dist/index.js

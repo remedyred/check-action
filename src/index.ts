@@ -81,17 +81,17 @@ void async function() {
 	const packageJson = getFileJSON('package.json')
 	const availableScripts = Object.keys(packageJson?.scripts || {})
 
-	if (input.NPM_TOKEN) {
-		process.env.NPM_TOKEN = input.NPM_TOKEN
-		process.env.NODE_AUTH_TOKEN = input.NPM_TOKEN
+	const env = {
+		NPM_TOKEN: input.NPM_TOKEN || process.env.NPM_TOKEN,
+		NODE_AUTH_TOKEN: input.NPM_TOKEN || process.env.NPM_TOKEN,
+		NPM_REGISTRY: input.NPM_REGISTRY || process.env.NPM_REGISTRY,
+		GITHUB_TOKEN: input.GITHUB_TOKEN || process.env.GITHUB_TOKEN
 	}
 
-	if (input.NPM_REGISTRY) {
-		process.env.NPM_REGISTRY = input.NPM_REGISTRY
-	}
-
-	if (input.GITHUB_TOKEN) {
-		process.env.GITHUB_TOKEN = input.GITHUB_TOKEN
+	for (const [key, value] of Object.entries(env)) {
+		if (value) {
+			$.prefix += `export ${key}="${value}";`
+		}
 	}
 
 	const hasScript = scriptName => {
