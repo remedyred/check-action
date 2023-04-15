@@ -72,6 +72,11 @@ void async function () {
 	}
 	input.DEBUG ||= process.env.RUNNER_DEBUG === 'true'
 	process.env.DEBUG = process.env.RUNNER_DEBUG === 'true' || input.DEBUG ? 'true' : 'false'
+
+	if (input.DEBUG) {
+		$.prefix = 'set -euox pipefail;'
+	}
+
 	try {
 		await which(input.PACKAGE_MANAGER)
 	} catch {
