@@ -121,7 +121,7 @@ void async function() {
 			await $`npm config set //${registry}/:_authToken ${env.NPM_TOKEN}`
 
 			try {
-				const res = await $`npm whoami`
+				const res = await $`npm whoami`.quiet()
 				if (res.exitCode !== 0) {
 					throw new Error(res.stderr || res.stdout)
 				}
