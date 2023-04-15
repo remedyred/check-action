@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-import {JSONParse} from '@snickbit/utilities'
+import {JSONParse, objectExcept} from '@snickbit/utilities'
 import fs, {PathLike} from 'fs'
 import 'zx/globals'
 
@@ -75,6 +75,14 @@ void async function() {
 
 	if (input.DEBUG) {
 		$.prefix = 'set -euox pipefail;'
+
+		/* eslint-disable array-element-newline */
+		echo(chalk.yellow(`[DEBUG]`), `Input:`, JSON.stringify(objectExcept(input, [
+			'NPM_TOKEN',
+			'GITHUB_TOKEN',
+			'NPM_REGISTRY'
+		]), null, 2))
+		/* eslint-enable array-element-newline */
 	}
 
 	try {
