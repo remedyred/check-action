@@ -33,7 +33,7 @@ const isDebug = () => {
 	return process.env.DEBUG === 'true'
 }
 
-void async function () {
+void async function() {
 	const args = argv._.slice(1)
 
 	interface Input {

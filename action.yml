@@ -26,14 +26,14 @@ inputs:
     description: "Paths that are allowed to be automatically committed if changed. [true/false] (default: false)"
     required: false
   GITHUB_TOKEN:
-    description: "GitHub token to use."
+    description: GitHub token to use.
     required: false
   NPM_REGISTRY:
     description: "NPM registry to use. (default: 'https://registry.npmjs.org')"
     required: false
     default: "https://registry.npmjs.org"
   NPM_TOKEN:
-    description: "NPM token to use."
+    description: NPM token to use.
     required: false
 runs:
   using: composite
