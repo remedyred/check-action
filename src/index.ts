@@ -106,12 +106,16 @@ void async function () {
 
 		if (env.NPM_TOKEN) {
 			await $`npm config set //${registry}/:_authToken ${env.NPM_TOKEN}`
-		}
 
-		try {
-			await $`npm whoami`
-		} catch {
-			die`Failed to authenticate with NPM registry`
+			try {
+				const res = await $`npm whoami`
+				if (res.exitCode !== 0) {
+					throw new Error(res.stderr || res.stdout)
+				}
+				echo`Authenticated with NPM registry as ${res.stdout}`
+			} catch {
+				die`Failed to authenticate with NPM registry`
+			}
 		}
 	}
 
