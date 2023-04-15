@@ -33,7 +33,7 @@ const isDebug = () => {
 	return process.env.DEBUG === 'true'
 }
 
-void async function() {
+void async function () {
 	const args = argv._.slice(1)
 
 	interface Input {
@@ -94,11 +94,19 @@ void async function() {
 		}
 	}
 
-	if (env.NPM_TOKEN) {
+	if (env.NPM_TOKEN || env.NPM_REGISTRY) {
+		echo`Setup npm`
 		const registry = (env.NPM_REGISTRY || 'https://registry.npmjs.org/')
 			.replace(/^https?:\/\//, '')
 			.replace(/\/$/, '')
-		await $`npm config set //${registry}/:_authToken ${env.NPM_TOKEN}`
+
+		if (env.NPM_REGISTRY) {
+			await $`npm config set registry ${env.NPM_REGISTRY}`
+		}
+
+		if (env.NPM_TOKEN) {
+			await $`npm config set //${registry}/:_authToken ${env.NPM_TOKEN}`
+		}
 
 		try {
 			await $`npm whoami`
