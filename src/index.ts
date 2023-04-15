@@ -84,13 +84,26 @@ void async function() {
 	const env = {
 		NPM_TOKEN: input.NPM_TOKEN || process.env.NPM_TOKEN,
 		NODE_AUTH_TOKEN: input.NPM_TOKEN || process.env.NPM_TOKEN,
-		NPM_REGISTRY: input.NPM_REGISTRY || process.env.NPM_REGISTRY,
+		NPM_REGISTRY: input.NPM_REGISTRY || process.env.NPM_REGISTRY || 'https://registry.npmjs.org/',
 		GITHUB_TOKEN: input.GITHUB_TOKEN || process.env.GITHUB_TOKEN
 	}
 
 	for (const [key, value] of Object.entries(env)) {
 		if (value) {
 			$.prefix += `export ${key}="${value}";`
+		}
+	}
+
+	if (env.NPM_TOKEN) {
+		const registry = (env.NPM_REGISTRY || 'https://registry.npmjs.org/')
+			.replace(/^https?:\/\//, '')
+			.replace(/\/$/, '')
+		await $`npm config set //${registry}/:_authToken ${env.NPM_TOKEN}`
+
+		try {
+			await $`npm whoami`
+		} catch {
+			die`Failed to authenticate with NPM registry`
 		}
 	}
 
