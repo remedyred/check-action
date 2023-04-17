@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-import {JSONParse, objectExcept} from '@snickbit/utilities'
+import {JSONParse, JSONPrettify, objectExcept} from '@snickbit/utilities'
 import fs, {PathLike} from 'fs'
 import 'zx/globals'
 
@@ -34,7 +34,7 @@ const isDebug = () => {
 }
 
 void async function() {
-	const args = argv._.slice(1)
+	const args = argv._
 
 	interface Input {
 		PACKAGE_MANAGER: string
@@ -66,17 +66,21 @@ void async function() {
 		NPM_TOKEN: process.env.NPM_TOKEN || process.env.NPM_AUTH_TOKEN
 	}
 
-	const input = {
+	const parsedInput = JSONParse<Input>(args[0])
+
+	const input: Input = {
 		...inputDefaults,
-		...JSONParse<Input>(args[0])
+		...parsedInput
 	}
-	input.DEBUG ||= process.env.RUNNER_DEBUG === 'true'
-	process.env.DEBUG = process.env.RUNNER_DEBUG === 'true' || input.DEBUG ? 'true' : 'false'
+	input.DEBUG ||= process.env.RUNNER_DEBUG === '1' || process.env.DEBUG === 'true'
 
 	if (input.DEBUG) {
 		$.prefix = 'set -euox pipefail;'
 
 		/* eslint-disable array-element-newline */
+		// echo(chalk.yellow(`[DEBUG]`), `env:`, JSONPrettify(process.env))
+		echo(chalk.yellow(`[DEBUG]`), `args:`, JSONPrettify(argv))
+		echo(chalk.yellow(`[DEBUG]`), `parsedInput:`, JSONPrettify(parsedInput))
 		echo(chalk.yellow(`[DEBUG]`), `Input:`, JSON.stringify(objectExcept(input, [
 			'NPM_TOKEN',
 			'GITHUB_TOKEN',

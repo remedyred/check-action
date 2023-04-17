@@ -35,6 +35,9 @@ inputs:
   NPM_TOKEN:
     description: NPM token to use.
     required: false
+  DEBUG:
+    description: "Manually debug the action. [true/false] (default: false)"
+    required: false
 runs:
   using: composite
   steps:
@@ -67,7 +70,7 @@ runs:
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     - name: Run build checks
-      run: node ${{ github.action_path }}/dist/index.js
+      run: node ${{ github.action_path }}/dist/index.js '${{ toJSON(inputs) }}'
       shell: bash
       env:
         FORCE_COLOR: "3"
