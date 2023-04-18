@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-import {JSONParse, JSONPrettify, objectExcept} from '@snickbit/utilities'
+import {JSONParse, JSONPrettify, objectExcept, parse} from '@snickbit/utilities'
 import fs, {PathLike} from 'fs'
 import 'zx/globals'
 
@@ -66,12 +66,15 @@ void async function() {
 		NPM_TOKEN: process.env.NPM_TOKEN || process.env.NPM_AUTH_TOKEN
 	}
 
-	const parsedInput = JSONParse<Input>(args[0])
+	const parsedInput = JSONParse(args[0]) as Partial<Input>
 
-	const input: Input = {
-		...inputDefaults,
-		...parsedInput
+	const input: Input = {...inputDefaults}
+	for (const [key, value] of Object.entries(parsedInput)) {
+		if (value !== '') {
+			input[key] = parse(value)
+		}
 	}
+
 	input.DEBUG ||= process.env.RUNNER_DEBUG === '1' || process.env.DEBUG === 'true'
 
 	if (input.DEBUG) {
