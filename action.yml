@@ -2,7 +2,7 @@ name: "Build, test, and lint"
 description: "pnpm run build, test, and lint scripts"
 inputs:
   PACKAGE_MANAGER:
-    description: "package manager to use. (default: 'pnpm')"
+    description: "package manager to use. (default: 'auto')"
     required: false
   SCRIPTS:
     description: "package.json scripts to run. (default: 'build,lint,test,docs')"
@@ -50,13 +50,13 @@ runs:
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.ref }}
-        token: ${{ inputs.GITHUB_TOKEN }}
+        token: ${{ inputs.GITHUB_TOKEN || github.token }}
 
     - uses: actions/checkout@v3
       if: github.event_name == 'push'
       with:
         fetch-depth: 0
-        token: ${{ inputs.GITHUB_TOKEN }}
+        token: ${{ inputs.GITHUB_TOKEN || github.token }}
 
     - uses: pnpm/action-setup@v2.2.4
       with:
