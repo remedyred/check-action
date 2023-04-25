@@ -18,16 +18,16 @@
 		]
 	},
 	"dependencies": {
-		"@snickbit/utilities": "3.5.0",
+		"@snickbit/utilities": "3.8.2",
 		"zx": "7.2.1"
 	},
 	"devDependencies": {
-		"@snickbit/eslint-config": "1.4.4",
+		"@snickbit/eslint-config": "1.5.1",
 		"@snickbit/semantic-release": "1.6.3",
-		"@types/node": "^18.15.9",
+		"@types/node": "^18.16.0",
 		"@vercel/ncc": "^0.36.1",
-		"eslint": "8.36.0",
-		"semantic-release": "19.0.5"
+		"eslint": "8.39.0",
+		"semantic-release": "21.0.1"
 	},
 	"engines": {
 		"node": ">= 18.16"
