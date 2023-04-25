@@ -35,6 +35,10 @@ inputs:
   NPM_TOKEN:
     description: NPM token to use.
     required: false
+  NODE_VERSION:
+    description: "Node version to use. (default: 'lts/*')"
+    required: false
+    default: "lts/*"
   DEBUG:
     description: "Manually debug the action. [true/false] (default: false)"
     required: false
@@ -63,7 +67,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: ${{ inputs.NODE_VERSION }}
         cache: ${{ inputs.PACKAGE_MANAGER }}
         registry-url: ${{ inputs.NPM_REGISTRY }}
       env:
