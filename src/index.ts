@@ -1,8 +1,15 @@
 #!/usr/bin/env zx
 
-import {JSONParse, JSONPrettify, objectExcept, parse} from '@snickbit/utilities'
+import {isString, JSONParse, JSONPrettify, objectExcept, parse} from '@snickbit/utilities'
 import fs, {PathLike} from 'fs'
 import 'zx/globals'
+
+function stringify(arg: ProcessOutput | any) {
+	if (arg instanceof ProcessOutput) {
+		return arg.toString().replace(/\n$/, '')
+	}
+	return `${arg}`
+}
 
 /**
  * Get JSON from file
@@ -14,24 +21,51 @@ export function getFileJSON(filepath: PathLike, fallback?: any) {
 	return content ? JSONParse(content, fallback) : fallback
 }
 
+const secrets: Record<string, string> = {}
+
+const stripSecrets = (msg: string) => {
+	for (const [name, value] of Object.entries(secrets)) {
+		if (value) {
+			msg = msg.replace(value, isDebug ? chalk.white.bold(name) : '***')
+		}
+	}
+
+	return msg
+}
+
+const out = (prefix: string, pieces: TemplateStringsArray, ...args: any[]) => {
+	const lastIdx = pieces.length - 1
+	const msg = pieces.every(element => isString(element)) && lastIdx === args.length
+		? args.map((arg, argIndex) => pieces[argIndex] + stringify(arg)).join('') + pieces[lastIdx]
+		: [pieces, ...args].map(element => stringify(element)).join(' ')
+
+	console.log(stripSecrets(msg))
+}
+
+const log = (pieces, ...args) => {
+	out(chalk.white(`[LOG]`), pieces, ...args)
+}
+
+const info = (pieces, ...args) => {
+	out(chalk.blue(`[INFO]`), pieces, ...args)
+}
+
 const die = (pieces, ...args) => {
-	echo(chalk.red(`[DIE]`), pieces, ...args)
+	out(chalk.red(`[DIE]`), pieces, ...args)
 	process.exit(1)
 }
 
 const success = (pieces, ...args) => {
-	echo(chalk.green(`[SUCCESS]`), pieces, ...args)
+	out(chalk.green(`[SUCCESS]`), pieces, ...args)
 }
 
 const debug = (pieces, ...args) => {
-	if (isDebug()) {
-		echo(chalk.yellow(`[DEBUG]`), pieces, ...args)
+	if (isDebug) {
+		out(chalk.yellow(`[DEBUG]`), pieces, ...args)
 	}
 }
 
-const isDebug = () => {
-	return process.env.DEBUG === 'true'
-}
+let isDebug = false
 
 void async function() {
 	const args = argv._
@@ -76,19 +110,20 @@ void async function() {
 	}
 
 	input.DEBUG ||= process.env.RUNNER_DEBUG === '1' || process.env.DEBUG === 'true'
+	isDebug = !!input.DEBUG
 
-	if (input.DEBUG) {
+	if (isDebug) {
 		$.prefix = 'set -euox pipefail;'
 
 		/* eslint-disable array-element-newline */
-		// echo(chalk.yellow(`[DEBUG]`), `env:`, JSONPrettify(process.env))
-		echo(chalk.yellow(`[DEBUG]`), `args:`, JSONPrettify(argv))
-		echo(chalk.yellow(`[DEBUG]`), `parsedInput:`, JSONPrettify(parsedInput))
-		echo(chalk.yellow(`[DEBUG]`), `Input:`, JSON.stringify(objectExcept(input, [
+		// debug(`env:`, JSONPrettify(process.env))
+		debug('argv', JSONPrettify(argv))
+		debug('parsedInput', JSONPrettify(parsedInput))
+		debug('Input', JSONPrettify(objectExcept(input, [
 			'NPM_TOKEN',
 			'GITHUB_TOKEN',
 			'NPM_REGISTRY'
-		]), null, 2))
+		])))
 		/* eslint-enable array-element-newline */
 	}
 
@@ -115,7 +150,7 @@ void async function() {
 	}
 
 	if (env.NPM_TOKEN || env.NPM_REGISTRY) {
-		echo`Setup npm`
+		log`Setup npm`
 		const registry = (env.NPM_REGISTRY || 'https://registry.npmjs.org/')
 			.replace(/^https?:\/\//, '')
 			.replace(/\/$/, '')
@@ -132,7 +167,7 @@ void async function() {
 				if (res.exitCode !== 0) {
 					throw new Error(res.stderr || res.stdout)
 				}
-				echo`Authenticated with NPM registry as ${res.stdout}`
+				log`Authenticated with NPM registry as ${res.stdout}`
 			} catch {
 				die`Failed to authenticate with NPM registry`
 			}
@@ -153,7 +188,7 @@ void async function() {
 				flags.push(`--if-present`)
 			}
 
-			if (isDebug()) {
+			if (isDebug) {
 				flags.push(`--loglevel=debug`)
 			}
 
@@ -173,16 +208,16 @@ void async function() {
 		}
 	}
 
-	echo`Setup git`
+	log`Setup git`
 	await $`git config --global user.email "github-actions[bot]@users.noreply.github.com"`
 	await $`git config --global user.name "github-actions[bot]"`
 	await $`git config advice.ignoredHook false`
 
-	echo`Install dependencies`
+	log`Install dependencies`
 	const installParams: string[] = []
 
 	if (pm.includes('pnpm')) {
-		installParams.push('install', `--loglevel=${isDebug() ? 'debug' : 'warn'}`, '--frozen-lockfile')
+		installParams.push('install', `--loglevel=${isDebug ? 'debug' : 'warn'}`, '--frozen-lockfile')
 	} else if (pm.includes('yarn')) {
 		installParams.push('install', '--frozen-lockfile')
 	} else if (pm.includes('npm')) {
@@ -229,7 +264,7 @@ void async function() {
 			die`${bailOnDirty} ${gitStatus.stdout}`
 		}
 	} else if (input.AUTO_COMMIT) {
-		echo`Committing changes`
+		log`Committing changes`
 		const gitStatus = await $`git status --porcelain`
 		if (gitStatus.stdout) {
 			const paths = input.AUTO_COMMIT === true ? '.' : input.AUTO_COMMIT
