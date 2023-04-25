@@ -67,7 +67,7 @@ const debug = (pieces, ...args) => {
 
 let isDebug = false
 
-void async function() {
+async function main() {
 	const args = argv._
 
 	interface Input {
@@ -273,4 +273,11 @@ void async function() {
 			await $`git push`
 		}
 	}
-}()
+}
+
+main().then(() => {
+	success`Finished`
+	process.exit(0)
+}).catch(error => {
+	die`${error}`
+})
