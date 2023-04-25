@@ -31,7 +31,6 @@ inputs:
   NPM_REGISTRY:
     description: "NPM registry to use. (default: 'https://registry.npmjs.org')"
     required: false
-    default: "https://registry.npmjs.org"
   NPM_TOKEN:
     description: NPM token to use.
     required: false
@@ -69,7 +68,7 @@ runs:
       with:
         node-version: ${{ inputs.NODE_VERSION || 'lts/*' }}
         cache: ${{ inputs.PACKAGE_MANAGER }}
-        registry-url: ${{ inputs.NPM_REGISTRY }}
+        registry-url: ${{ inputs.NPM_REGISTRY || 'https://registry.npmjs.org' }}
       env:
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
