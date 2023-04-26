@@ -66,6 +66,7 @@ const debug = (pieces, ...args) => {
 }
 
 let isDebug = false
+$.verbose = false
 
 async function main() {
 	const args = argv._
@@ -116,6 +117,7 @@ async function main() {
 
 	if (isDebug) {
 		$.prefix = 'set -euox pipefail;'
+		$.verbose = true
 
 		/* eslint-disable array-element-newline */
 		// debug(`env:`, JSONPrettify(process.env))
