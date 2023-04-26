@@ -120,7 +120,6 @@ async function main() {
 		$.verbose = true
 
 		/* eslint-disable array-element-newline */
-		// debug(`env:`, JSONPrettify(process.env))
 		debug('argv', JSONPrettify(argv))
 		debug('parsedInput', JSONPrettify(parsedInput))
 		debug('Input', JSONPrettify(objectExcept(input, [
