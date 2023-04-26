@@ -83,6 +83,7 @@ async function main() {
 		GITHUB_TOKEN?: string
 		NPM_REGISTRY?: string
 		NPM_TOKEN?: string
+		NPM_REGISTRY_SCOPE?: string
 	}
 
 	const inputDefaults: Input = {
@@ -97,7 +98,8 @@ async function main() {
 		DEBUG: false,
 		GITHUB_TOKEN: process.env.GITHUB_TOKEN,
 		NPM_REGISTRY: process.env.NPM_REGISTRY,
-		NPM_TOKEN: process.env.NPM_TOKEN || process.env.NPM_AUTH_TOKEN
+		NPM_TOKEN: process.env.NPM_TOKEN || process.env.NPM_AUTH_TOKEN,
+		NPM_REGISTRY_SCOPE: process.env.NPM_REGISTRY_SCOPE
 	}
 
 	const parsedInput = JSONParse(args[0]) as Partial<Input>
@@ -122,7 +124,8 @@ async function main() {
 		debug('Input', JSONPrettify(objectExcept(input, [
 			'NPM_TOKEN',
 			'GITHUB_TOKEN',
-			'NPM_REGISTRY'
+			'NPM_REGISTRY',
+			'NPM_REGISTRY_SCOPE'
 		])))
 		/* eslint-enable array-element-newline */
 	}
@@ -140,6 +143,10 @@ async function main() {
 	secrets.NPM_AUTH_TOKEN = secrets.NPM_TOKEN
 	secrets.GITHUB_TOKEN = input.GITHUB_TOKEN || process.env.GITHUB_TOKEN
 	secrets.NPM_REGISTRY = input.NPM_REGISTRY || process.env.NPM_REGISTRY || 'https://registry.npmjs.org/'
+	secrets.NPM_REGISTRY_SCOPE = input.NPM_REGISTRY_SCOPE || process.env.NPM_REGISTRY_SCOPE
+	if (secrets.NPM_REGISTRY_SCOPE && !secrets.NPM_REGISTRY_SCOPE.startsWith('@')) {
+		secrets.NPM_REGISTRY_SCOPE = `@${secrets.NPM_REGISTRY_SCOPE}`
+	}
 
 	for (const [key, value] of Object.entries(secrets)) {
 		if (value) {
@@ -153,15 +160,27 @@ async function main() {
 			.replace(/^https?:\/\//, '')
 			.replace(/\/$/, '')
 
+		const configPairs: string[] = []
+
 		if (secrets.NPM_REGISTRY) {
-			await $`npm config set registry ${secrets.NPM_REGISTRY}`
+			configPairs.push(`registry=${secrets.NPM_REGISTRY}`)
+		}
+		if (secrets.NPM_REGISTRY_SCOPE) {
+			configPairs.push(`${secrets.NPM_REGISTRY_SCOPE}:registry=${secrets.NPM_REGISTRY}`)
 		}
 
 		if (secrets.NPM_TOKEN) {
-			await $`npm config set //${registry}/:_authToken ${secrets.NPM_TOKEN}`
+			configPairs.push(`//${registry}/:_authToken=${secrets.NPM_TOKEN}`)
+		}
 
+		if (configPairs.length > 0) {
+			await $`npm config set ${configPairs.join(' ')}`
+		}
+
+		if (secrets.NPM_TOKEN) {
+			const whoamiFlags = ['--registry', secrets.NPM_REGISTRY]
 			try {
-				const res = await $`npm whoami`.quiet()
+				const res = await $`npm whoami ${whoamiFlags}`.quiet()
 				if (res.exitCode !== 0) {
 					throw new Error(res.stderr || res.stdout)
 				}
