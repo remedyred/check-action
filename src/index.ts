@@ -47,7 +47,7 @@ async function main() {
 		}
 
 		if (configPairs.length > 0) {
-			await $`npm config set ${configPairs.join(' ')}`
+			await $`npm config set ${configPairs}`
 		}
 
 		if (secrets.NPM_TOKEN) {
