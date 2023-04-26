@@ -145,6 +145,10 @@ async function main() {
 	secrets.NPM_AUTH_TOKEN = secrets.NPM_TOKEN
 	secrets.GITHUB_TOKEN = input.GITHUB_TOKEN || process.env.GITHUB_TOKEN
 	secrets.NPM_REGISTRY = input.NPM_REGISTRY || process.env.NPM_REGISTRY || 'https://registry.npmjs.org/'
+	secrets.NPM_REGISTRY_DOMAIN = (secrets.NPM_REGISTRY || 'https://registry.npmjs.org/')
+		.replace(/^https?:\/\//, '')
+		.replace(/\/$/, '')
+
 	secrets.NPM_REGISTRY_SCOPE = input.NPM_REGISTRY_SCOPE || process.env.NPM_REGISTRY_SCOPE
 	if (secrets.NPM_REGISTRY_SCOPE && !secrets.NPM_REGISTRY_SCOPE.startsWith('@')) {
 		secrets.NPM_REGISTRY_SCOPE = `@${secrets.NPM_REGISTRY_SCOPE}`
@@ -158,9 +162,6 @@ async function main() {
 
 	if (secrets.NPM_TOKEN || secrets.NPM_REGISTRY) {
 		log`Setup npm`
-		const registry = (secrets.NPM_REGISTRY || 'https://registry.npmjs.org/')
-			.replace(/^https?:\/\//, '')
-			.replace(/\/$/, '')
 
 		const configPairs: string[] = []
 
@@ -172,7 +173,7 @@ async function main() {
 		}
 
 		if (secrets.NPM_TOKEN) {
-			configPairs.push(`//${registry}/:_authToken=${secrets.NPM_TOKEN}`)
+			configPairs.push(`//${secrets.NPM_REGISTRY_DOMAIN}/:_authToken=${secrets.NPM_TOKEN}`)
 		}
 
 		if (configPairs.length > 0) {
