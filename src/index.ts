@@ -21,12 +21,12 @@ export function getFileJSON(filepath: PathLike, fallback?: any) {
 	return content ? JSONParse(content, fallback) : fallback
 }
 
-const secrets: Record<string, string> = {}
+const secrets: Record<string, any> = {}
 
 const stripSecrets = (msg: string) => {
 	for (const [name, value] of Object.entries(secrets)) {
 		if (value) {
-			msg = msg.replace(value, isDebug ? chalk.white.bold(name) : '***')
+			msg = msg.replace(value, isDebug ? chalk.white.bold(`{{${chalk.yellow(name)}}}`) : '***')
 		}
 	}
 
@@ -35,7 +35,7 @@ const stripSecrets = (msg: string) => {
 
 const out = (prefix: string, pieces: TemplateStringsArray, ...args: any[]) => {
 	const lastIdx = pieces.length - 1
-	const msg = pieces.every(element => isString(element)) && lastIdx === args.length
+	const msg = Array.isArray(pieces) && pieces.every(element => isString(element)) && lastIdx === args.length
 		? args.map((arg, argIndex) => pieces[argIndex] + stringify(arg)).join('') + pieces[lastIdx]
 		: [pieces, ...args].map(element => stringify(element)).join(' ')
 
@@ -136,31 +136,29 @@ async function main() {
 	const packageJson = getFileJSON('package.json')
 	const availableScripts = Object.keys(packageJson?.scripts || {})
 
-	const env = {
-		NPM_TOKEN: input.NPM_TOKEN || process.env.NPM_TOKEN,
-		NODE_AUTH_TOKEN: input.NPM_TOKEN || process.env.NPM_TOKEN,
-		NPM_REGISTRY: input.NPM_REGISTRY || process.env.NPM_REGISTRY || 'https://registry.npmjs.org/',
-		GITHUB_TOKEN: input.GITHUB_TOKEN || process.env.GITHUB_TOKEN
-	}
+	secrets.NPM_TOKEN = input.NPM_TOKEN || process.env.NPM_TOKEN
+	secrets.NPM_AUTH_TOKEN = secrets.NPM_TOKEN
+	secrets.GITHUB_TOKEN = input.GITHUB_TOKEN || process.env.GITHUB_TOKEN
+	secrets.NPM_REGISTRY = input.NPM_REGISTRY || process.env.NPM_REGISTRY || 'https://registry.npmjs.org/'
 
-	for (const [key, value] of Object.entries(env)) {
+	for (const [key, value] of Object.entries(secrets)) {
 		if (value) {
 			$.prefix += `export ${key}="${value}";`
 		}
 	}
 
-	if (env.NPM_TOKEN || env.NPM_REGISTRY) {
+	if (secrets.NPM_TOKEN || secrets.NPM_REGISTRY) {
 		log`Setup npm`
-		const registry = (env.NPM_REGISTRY || 'https://registry.npmjs.org/')
+		const registry = (secrets.NPM_REGISTRY || 'https://registry.npmjs.org/')
 			.replace(/^https?:\/\//, '')
 			.replace(/\/$/, '')
 
-		if (env.NPM_REGISTRY) {
-			await $`npm config set registry ${env.NPM_REGISTRY}`
+		if (secrets.NPM_REGISTRY) {
+			await $`npm config set registry ${secrets.NPM_REGISTRY}`
 		}
 
-		if (env.NPM_TOKEN) {
-			await $`npm config set //${registry}/:_authToken ${env.NPM_TOKEN}`
+		if (secrets.NPM_TOKEN) {
+			await $`npm config set //${registry}/:_authToken ${secrets.NPM_TOKEN}`
 
 			try {
 				const res = await $`npm whoami`.quiet()
