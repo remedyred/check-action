@@ -18,6 +18,7 @@
 		]
 	},
 	"dependencies": {
+		"@snickbit/node-utilities": "4.7.2",
 		"@snickbit/utilities": "3.8.2",
 		"zx": "7.2.1"
 	},
@@ -30,6 +31,6 @@
 		"semantic-release": "21.0.1"
 	},
 	"engines": {
-		"node": ">= 18.16"
+		"node": ">= 18"
 	}
 }
