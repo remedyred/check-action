@@ -50,6 +50,9 @@ async function main() {
 			await $`npm config set ${configPairs}`
 		}
 
+		const npmConfig = await $`npm config list --loglevel=debug`.quiet()
+		out.debug`NPM config: ${npmConfig}`
+
 		if (secrets.NPM_TOKEN) {
 			const username = await whoAmI()
 
