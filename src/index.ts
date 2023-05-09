@@ -36,10 +36,11 @@ async function main() {
 		const configPairs: string[] = []
 
 		if (secrets.NPM_REGISTRY) {
-			configPairs.push(`registry=${secrets.NPM_REGISTRY}`)
-		}
-		if (secrets.NPM_REGISTRY_SCOPE) {
-			configPairs.push(`${secrets.NPM_REGISTRY_SCOPE}:registry=${secrets.NPM_REGISTRY}`)
+			if (secrets.NPM_REGISTRY_SCOPE) {
+				configPairs.push(`${secrets.NPM_REGISTRY_SCOPE}:registry=${secrets.NPM_REGISTRY}`)
+			} else {
+				configPairs.push(`registry=${secrets.NPM_REGISTRY}`)
+			}
 		}
 
 		if (secrets.NPM_TOKEN) {
