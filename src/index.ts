@@ -48,17 +48,17 @@ async function main() {
 		}
 
 		if (configPairs.length > 0) {
-			await $`npm config set ${configPairs}`
+			await $`npm config set ${configPairs}`.quiet()
 		}
 
-		const npmConfig = await $`npm config list --loglevel=debug`.quiet()
+		const npmConfig = await $`npm config list`.quiet()
 		out.debug`NPM config: ${npmConfig}`
 
 		if (secrets.NPM_TOKEN) {
 			const username = await whoAmI()
 
 			if (username) {
-				out`Authenticated with NPM registry as ${username}`
+				out`Authenticated with NPM registry as ${username.slice(0, 1)}${'*'.repeat(username.length - 2)}${username.slice(-1)}`
 			} else {
 				die`Failed to authenticate with NPM registry`
 			}
