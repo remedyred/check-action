@@ -14,7 +14,7 @@ export async function whoAmI(): Promise<string | undefined> {
 		}
 	} catch (error: any) {
 		if (isDebug()) {
-			throw new Error(error.stderr || error.stdout)
+			out.error(error.stderr || error.stdout)
 		}
 	}
 }
