@@ -58,6 +58,13 @@ runs:
         token: ${{ inputs.GITHUB_TOKEN || env.GITHUB_TOKEN || github.token }}
 
     - uses: actions/checkout@v3
+      if: github.event_name == 'merge_group'
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.merge_group.head.ref }}
+        token: ${{ inputs.GITHUB_TOKEN || env.GITHUB_TOKEN || github.token }}
+
+    - uses: actions/checkout@v3
       if: github.event_name == 'push'
       with:
         fetch-depth: 0
