@@ -51,7 +51,8 @@ export enum InputKeys {
 	GITHUB_TOKEN = 'GITHUB_TOKEN',
 	NPM_REGISTRY = 'NPM_REGISTRY',
 	NPM_TOKEN = 'NPM_TOKEN',
-	NPM_REGISTRY_SCOPE = 'NPM_REGISTRY_SCOPE'
+	NPM_REGISTRY_SCOPE = 'NPM_REGISTRY_SCOPE',
+	PREVENT_COMMITS = 'PREVENT_COMMITS'
 }
 
 const inputActionRequiresGit = new Set([
@@ -75,6 +76,7 @@ interface Input extends MappedInput {
 	NPM_REGISTRY?: string
 	NPM_TOKEN?: string
 	NPM_REGISTRY_SCOPE?: string
+	PREVENT_COMMITS?: boolean
 }
 
 const inputDefaults: Input = {
@@ -155,7 +157,7 @@ export const requiresGit = (name?: string) => {
 		return inputActionRequiresGit.has(name)
 	}
 	const input = useInput()
-	if (!input) {
+	if (!input || input.PREVENT_COMMITS) {
 		return false
 	}
 

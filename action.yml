@@ -41,6 +41,9 @@ inputs:
     description: "Node version to use. (default: 'lts/*')"
     required: false
     default: "lts/*"
+  PREVENT_COMMITS:
+    description: "Prevent commits. [true/false] (default: false)"
+    required: false
   DEBUG:
     description: "Manually debug the action. [true/false] (default: false)"
     required: false
