@@ -50,6 +50,12 @@ inputs:
 runs:
   using: composite
   steps:
+    - if: github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.event_name != 'push'
+      shell: bash
+      run: |
+        echo "[ERROR] Unsupported event: ${{ github.event_name }}. This action only supports pull_request, merge_group, and push events at this time."
+        exit 1
+
     - uses: actions/checkout@v3
       if: github.event_name == 'pull_request'
       with:
