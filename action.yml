@@ -52,13 +52,13 @@ runs:
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.ref }}
-        token: ${{ inputs.GITHUB_TOKEN || github.token }}
+        token: ${{ inputs.GITHUB_TOKEN || env.GITHUB_TOKEN || github.token }}
 
     - uses: actions/checkout@v3
       if: github.event_name == 'push'
       with:
         fetch-depth: 0
-        token: ${{ inputs.GITHUB_TOKEN || github.token }}
+        token: ${{ inputs.GITHUB_TOKEN || env.GITHUB_TOKEN || github.token }}
 
     - uses: pnpm/action-setup@v2.2.4
       with:
