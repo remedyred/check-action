@@ -110,7 +110,6 @@ async function main() {
 			die`Error installing dependencies ${error.stdout}`
 		}
 	}
-	out.success`Dependencies installed`
 
 	for (const script of input.SCRIPTS.split(',')) {
 		await pnx(script)
