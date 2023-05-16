@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 import {die, out} from '@/output.js'
-import {isDebug, useInput, usePm, useSecrets} from '@/config.js'
+import {isDebug, isGitReady, requiresGit, setGitReady, useInput, usePm, useSecrets} from '@/config.js'
 import {pnx, whoAmI} from '@/npm.js'
 import 'zx/globals'
 
@@ -11,6 +11,7 @@ async function main() {
 	const input = useInput()
 
 	const secrets = useSecrets()
+
 	secrets.NPM_TOKEN = input.NPM_TOKEN || process.env.NPM_TOKEN
 	secrets.NPM_AUTH_TOKEN = secrets.NPM_TOKEN
 	secrets.GITHUB_TOKEN = input.GITHUB_TOKEN || process.env.GITHUB_TOKEN
@@ -67,10 +68,13 @@ async function main() {
 
 	const pm = [await usePm()]
 
-	out.info`Setup git`
-	await $`git config --global user.email "github-actions[bot]@users.noreply.github.com"`
-	await $`git config --global user.name "github-actions[bot]"`
-	await $`git config advice.ignoredHook false`
+	if (requiresGit()) {
+		out.info`Setup git`
+		await $`git config --global user.email "github-actions[bot]@users.noreply.github.com"`
+		await $`git config --global user.name "github-actions[bot]"`
+		await $`git config advice.ignoredHook false`
+		setGitReady()
+	}
 
 	out.info`Install dependencies`
 	const installParams: string[] = []
@@ -89,7 +93,7 @@ async function main() {
 			out.success`Dependencies installed`
 		}
 	} catch (error: any) {
-		if (error.stdout.includes('ERR_PNPM_OUTDATED_LOCKFILE') && input.AUTOFIX_LOCKFILE) {
+		if (error.stdout.includes('ERR_PNPM_OUTDATED_LOCKFILE') && input.AUTOFIX_LOCKFILE && isGitReady()) {
 			out.debug`Updating lockfile`
 			const lockfile: string[] = []
 			if (pm.includes('pnpm')) {
@@ -115,20 +119,22 @@ async function main() {
 		await pnx(script)
 	}
 
-	if (input.BAIL_ON_DIRTY) {
-		const gitStatus = await $`git status --porcelain`
-		if (gitStatus.stdout) {
-			const bailOnDirty = input.BAIL_ON_DIRTY === true ? 'true' : input.BAIL_ON_DIRTY
-			die`${bailOnDirty} ${gitStatus.stdout}`
-		}
-	} else if (input.AUTO_COMMIT) {
-		out`Committing changes`
-		const gitStatus = await $`git status --porcelain`
-		if (gitStatus.stdout) {
-			const paths = input.AUTO_COMMIT === true ? '.' : input.AUTO_COMMIT
-			await $`git add ${paths}`
-			await $`git commit -m "chore: update files modified by CI [skip ci]"`
-			await $`git push`
+	if (isGitReady()) {
+		if (input.BAIL_ON_DIRTY) {
+			const gitStatus = await $`git status --porcelain`
+			if (gitStatus.stdout) {
+				const bailOnDirty = input.BAIL_ON_DIRTY === true ? 'true' : input.BAIL_ON_DIRTY
+				die`${bailOnDirty} ${gitStatus.stdout}`
+			}
+		} else if (input.AUTO_COMMIT) {
+			out`Committing changes`
+			const gitStatus = await $`git status --porcelain`
+			if (gitStatus.stdout) {
+				const paths = input.AUTO_COMMIT === true ? '.' : input.AUTO_COMMIT
+				await $`git add ${paths}`
+				await $`git commit -m "chore: update files modified by CI [skip ci]"`
+				await $`git push`
+			}
 		}
 	}
 }
