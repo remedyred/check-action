@@ -78,7 +78,7 @@ runs:
 
     - uses: pnpm/action-setup@v2.2.4
       with:
-        version: 7
+        version: 8
       env:
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
