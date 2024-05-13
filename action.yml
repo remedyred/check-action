@@ -56,34 +56,34 @@ runs:
         echo "[ERROR] Unsupported event: ${{ github.event_name }}. This action only supports pull_request, merge_group, and push events at this time."
         exit 1
 
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.4
       if: github.event_name == 'pull_request'
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.ref }}
         token: ${{ inputs.GITHUB_TOKEN || env.GITHUB_TOKEN || github.token }}
 
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.4
       if: github.event_name == 'merge_group'
       with:
         fetch-depth: 0
         ref: ${{ github.event.merge_group.head.ref }}
         token: ${{ inputs.GITHUB_TOKEN || env.GITHUB_TOKEN || github.token }}
 
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.4
       if: github.event_name == 'push'
       with:
         fetch-depth: 0
         token: ${{ inputs.GITHUB_TOKEN || env.GITHUB_TOKEN || github.token }}
 
-    - uses: pnpm/action-setup@v2.4.0
+    - uses: pnpm/action-setup@v4.0.0
       with:
         version: 8
       env:
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3.7.0
+      uses: actions/setup-node@v4.0.0
       with:
         node-version: ${{ inputs.NODE_VERSION || 'lts/*' }}
         cache: ${{ inputs.PACKAGE_MANAGER }}
