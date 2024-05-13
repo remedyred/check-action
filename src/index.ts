@@ -61,7 +61,7 @@ async function main() {
 			if (username) {
 				out`Authenticated with NPM registry as ${username.slice(0, 1)}${'*'.repeat(username.length - 2)}${username.slice(-1)}`
 			} else {
-				die`Failed to authenticate with NPM registry`
+				die`Didn't authenticate with NPM registry`
 			}
 		}
 	}
