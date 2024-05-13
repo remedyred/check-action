@@ -2,7 +2,7 @@
 
 import {die, out} from '@/output.js'
 import {isDebug, isGitReady, requiresGit, setGitReady, useInput, usePm, useSecrets} from '@/config.js'
-import {pnx, whoAmI} from '@/npm.js'
+import {hasPnpmAutoFixError, pnx, whoAmI} from '@/npm.js'
 import 'zx/globals'
 
 $.verbose = false
@@ -93,7 +93,7 @@ async function main() {
 			out.success`Dependencies installed`
 		}
 	} catch (error: any) {
-		if (error.stdout.includes('ERR_PNPM_OUTDATED_LOCKFILE') && input.AUTOFIX_LOCKFILE && isGitReady()) {
+		if (hasPnpmAutoFixError(error.stdout) && input.AUTOFIX_LOCKFILE && isGitReady()) {
 			out.debug`Updating lockfile`
 			const lockfile: string[] = []
 			if (pm.includes('pnpm')) {
