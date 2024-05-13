@@ -2,7 +2,7 @@
 
 import {die, out} from '@/output.js'
 import {isDebug, isGitReady, requiresGit, setGitReady, useInput, usePm, useSecrets} from '@/config.js'
-import {pnx, whoAmI} from '@/npm.js'
+import {hasPnpmAutoFixError, pnx, whoAmI} from '@/npm.js'
 import 'zx/globals'
 
 $.verbose = false
@@ -61,7 +61,7 @@ async function main() {
 			if (username) {
 				out`Authenticated with NPM registry as ${username.slice(0, 1)}${'*'.repeat(username.length - 2)}${username.slice(-1)}`
 			} else {
-				die`Failed to authenticate with NPM registry`
+				die`Didn't authenticate with NPM registry`
 			}
 		}
 	}
@@ -80,7 +80,10 @@ async function main() {
 	const installParams: string[] = []
 
 	if (pm.includes('pnpm')) {
-		installParams.push('install', `--loglevel=${isDebug() ? 'debug' : 'warn'}`, '--frozen-lockfile')
+		installParams.push('install', '--frozen-lockfile')
+		if (isDebug()) {
+			installParams.push('--long')
+		}
 	} else if (pm.includes('yarn')) {
 		installParams.push('install', '--frozen-lockfile')
 	} else if (pm.includes('npm')) {
@@ -93,7 +96,7 @@ async function main() {
 			out.success`Dependencies installed`
 		}
 	} catch (error: any) {
-		if (error.stdout.includes('ERR_PNPM_OUTDATED_LOCKFILE') && input.AUTOFIX_LOCKFILE && isGitReady()) {
+		if (hasPnpmAutoFixError(error.stdout) && input.AUTOFIX_LOCKFILE && isGitReady()) {
 			out.debug`Updating lockfile`
 			const lockfile: string[] = []
 			if (pm.includes('pnpm')) {
