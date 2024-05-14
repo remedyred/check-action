@@ -17,7 +17,8 @@ export declare enum InputKeys {
     NPM_REGISTRY = "NPM_REGISTRY",
     NPM_TOKEN = "NPM_TOKEN",
     NPM_REGISTRY_SCOPE = "NPM_REGISTRY_SCOPE",
-    PREVENT_COMMITS = "PREVENT_COMMITS"
+    PREVENT_COMMITS = "PREVENT_COMMITS",
+    PNPM_VERSION = "PNPM_VERSION"
 }
 type MappedInput = {
     [key in InputKeys]?: boolean | string;
@@ -33,6 +34,7 @@ interface Input extends MappedInput {
     NPM_TOKEN?: string;
     NPM_REGISTRY_SCOPE?: string;
     PREVENT_COMMITS?: boolean;
+    PNPM_VERSION?: string;
 }
 export declare function useInput(): Input;
 export declare function usePm(): Promise<"npm" | "pnpm" | "yarn">;
