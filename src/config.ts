@@ -52,7 +52,8 @@ export enum InputKeys {
 	NPM_REGISTRY = 'NPM_REGISTRY',
 	NPM_TOKEN = 'NPM_TOKEN',
 	NPM_REGISTRY_SCOPE = 'NPM_REGISTRY_SCOPE',
-	PREVENT_COMMITS = 'PREVENT_COMMITS'
+	PREVENT_COMMITS = 'PREVENT_COMMITS',
+	PNPM_VERSION = 'PNPM_VERSION'
 }
 
 const inputActionRequiresGit = new Set([
@@ -77,6 +78,7 @@ interface Input extends MappedInput {
 	NPM_TOKEN?: string
 	NPM_REGISTRY_SCOPE?: string
 	PREVENT_COMMITS?: boolean
+	PNPM_VERSION?: string
 }
 
 const inputDefaults: Input = {
@@ -92,7 +94,8 @@ const inputDefaults: Input = {
 	GITHUB_TOKEN: process.env.GITHUB_TOKEN,
 	NPM_REGISTRY: process.env.NPM_REGISTRY,
 	NPM_TOKEN: process.env.NPM_TOKEN || process.env.NPM_AUTH_TOKEN,
-	NPM_REGISTRY_SCOPE: process.env.NPM_REGISTRY_SCOPE
+	NPM_REGISTRY_SCOPE: process.env.NPM_REGISTRY_SCOPE,
+	PNPM_VERSION: process.env.PNPM_VERSION ?? '9'
 }
 
 export function useInput() {
