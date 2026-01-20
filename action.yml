@@ -1,5 +1,8 @@
 name: "Build, test, and lint"
 description: "pnpm build, test, and lint scripts"
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
 inputs:
   PACKAGE_MANAGER:
     description: "package manager to use. (default: 'auto')"
